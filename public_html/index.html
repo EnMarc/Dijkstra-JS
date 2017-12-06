@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<!-- Procesamiento de Grafos con Algoritmo de Dijkstra -->
+<html>
+    <head>
+        <title>Algoritmo de Dijhstra</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="css/bootstrap.min.css" >
+        <link rel="stylesheet" href="css/styles.css" >
+    </head>
+    <body>
+        <div class="container">
+            <div class="jumbotron">
+                <h1 class="display-4"><a href="index.html">Procesamiento de Algoritmos de Dijkstra</a></h1>
+            </div>
+            <div class="card card-dark" id="card-nodos">
+                <h3 class="card-header">Nodos y Aristas</h3>
+                <div class="card-body">
+                    <form class="">
+                        <div class="form-group row">
+                            <label class="col-sm-2">Numero de Nodos</label>
+                            <div class="col-sm-2">
+                                <input type="number" class="form-control" id="nNodos" placeholder="# de nodos">
+                            </div>
+                            <label class="col-sm-2">Numero de Aristas</label>
+                            <div class="col-sm-2">
+                                <input type="number" class="form-control" id="nAristas" placeholder="# de aristas">
+                            </div>
+                            <div class="col-sm-4">
+                                <button id="btnContinuar" type="button" class="btn btn-primary btn-block">Siguiente</button>
+                            </div>
+                        </div>    
+                    </form>
+                </div>
+            </div>
+            <div class="card card-dark" id="card-aristas" style="display: none;">
+                <h3 class="card-header">Nodos relacionados</h3>
+                <div class="card-body">
+                    <form id="aristas"></form>
+                </div>
+            </div>
+            <div class="card card-dark" id="card-a-b" style="display: none;">
+                <h3 class="card-header">Nodos inicial y final</h3>
+                <div class="card-body">
+                    <form id="ab">
+                    	<div class="row">
+                            <div class="col">
+                                <label>Nodo inicial</label>
+                            </div>
+                            <div class="col">
+                                <label>Nodo Final</label>
+                            </div>
+                            <div class="col"></div>
+                        </div>
+                    	<div class="row">
+                            <div class="col">
+                                <select name="nodo_A" class="form-control" required></select>
+                            </div>
+                            <div class="col">
+                                <select name="nodo_B" class="form-control" required></select>
+                            </div>
+                            <div class="col">
+                                <button class="btn btn-primary btn-block" id="procesar">Procesar</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="card card-dark" id="card-result" style="display: none;">
+                <h3 class="card-header">Resultados obtenidos</h3>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <div id="resultado"></div>
+                        <h4>Mostrar detalle del proceso 
+                            <a class="btn btn-primary" data-toggle="collapse" href="#detalle" aria-expanded="false" aria-controls="detalle">Ver mas</a>
+                        </h4>
+                        <div class="collapse" id="detalle">
+                            <div class="card card-body"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script src="js/jquery.min.js"></script>
+        <script src="js/popper.js"></script>
+        <script src="js/bootstrap.min.js"></script>
+        <script src="js/functions.js"></script>
+        <script type="text/javascript">
+            $(document).ready(function(){
+                $('#card-aristas').hide();
+                var nNodos;
+                var nAristas;
+                var mAdyacenciaX = new Array(nNodos);
+                $('#btnContinuar').click(function(){
+                    nNodos = $('#nNodos').val();
+                    nAristas = $('#nAristas').val();
+                    var inner = '<div class="row"><div class="col"><label>Extremo A</label></div>\n\
+                    <div class="col"><label>Extremo B</label></div><div class="col"><label>Peso</label></div></div>';
+                    var options = '';
+                    //Creacion de Inputs para relacionar nodos
+                    for (i = 0; i < nAristas;i++){
+                        inner += vertex_to_vertex(i);
+                        inner += "<br>";
+                    }
+                    inner += '<input class="btn btn-primary btn-block" type="submit" value="Siguiente">';
+                    options+= '';
+                    for (i = 0; i < nNodos; i++){
+                        options += '<option value="'+i+'">'+i+'</option>';
+                    }
+                    //Inicializacion de matriz de adyacencia
+                    var m, n;
+                    for (m = 0; m < nNodos; m++){
+                        mAdyacenciaX[m] = new Array(nNodos);
+                        for (n = 0; n < nNodos; n++){
+                            mAdyacenciaX[m][n] = 0;
+                        }
+                    }
+                    //console.log(mAdyacenciaX);
+                    $('#aristas').append(inner);
+                    $('select').html(options);
+                    $('#card-aristas').show();
+                    $('#card-nodos').hide();
+                });
+                $('#aristas').submit(function(e){
+                    e.preventDefault();
+                    var a = 0, b = 0, p = 0;
+                    for (i = 0; i < nAristas;i++){
+                        a = $('select[name=nodo_A_'+i+']').val();
+                        b = $('select[name=nodo_B_'+i+']').val();
+                        p = $('input[name=peso_'+i+']').val();
+                        //console.log(a+' '+b+' '+p);
+                        mAdyacenciaX[a][b] = parseInt(p);
+                        mAdyacenciaX[b][a] = parseInt(p);
+                    }
+                    console.log(mAdyacenciaX);
+                    $('#card-a-b').show();
+                    $('#card-aristas').hide();
+                    return false;
+                });
+                $('#procesar').click(function(){
+                    $('#card-result').show();
+                    var a = $('select[name=nodo_A').val();
+                    var b = $('select[name=nodo_B').val();
+                    var resultado = new Array();
+                    resultado = dijkstra(nNodos, mAdyacenciaX, parseInt(a), parseInt(b));
+                    var labels = resultado[0];
+                    var ruta = resultado[1];
+                    var peso = resultado[2];
+                    var detalle = resultado[3];
+                    var innerDetalle = '<code>';
+                    var innerResult = '<h4>Matriz de Adyacencia</h4><table class="table table-bordered table-striped table-dark table-td-center" id="mAdyacencia"><tr><th></th>';
+                    var i,j;
+                    for (var i = 0; i < nNodos; i++){
+                        innerResult += '<th>'+i+'</th>';
+                    }
+                    innerResult += '</tr>';
+                    for (i = 0; i < nNodos; i++){
+                        innerResult += '<tr><th>'+i+'</th>';
+                        for (j = 0; j < nNodos; j++){
+                            innerResult += '<td>'+ mAdyacenciaX[i][j] +'</td>';
+                        }
+                        innerResult += '</tr>';
+                    }
+                    innerResult += '</table><hr><h4>Etiquetas de nodos</h4><table class="table table-bordered table-striped table-dark table-td-center" id="etiquetas"><tr><th>Nodo</th><th>Precedente</th><th>Peso</th><th>Marcado</th></tr>';
+                    for (i = 0; i < labels.length; i++){
+                        innerResult += '<tr><td>'+labels[i].nodo+'</td><td>'+labels[i].precedente+'</td><td>'+labels[i].peso+'</td><td>'+labels[i].marcado+'</td></tr>';
+                    }
+                    innerResult += '</table><hr><h4>Ruta m&iacute;nima</h4><table class="table table-bordered table-striped table-dark table-td-center" id="ruta"><tr><th>Ruta optima</th>';
+                    for (i = 0; i < ruta.length; i++){
+                        innerResult += '<td>&rarr;</td><td>'+ruta[i]+'</td>';
+                    }
+                    innerResult += '</table><hr><h4>Coste o Peso m&iacute;nimo</h4><p>El costo m&iacutenimo es: '+peso+'</p><hr>';
+                    var dtSplit = detalle.split('***');
+                    for (var i = 0; i < dtSplit.length; i++) {
+                        innerDetalle += '<span>'+dtSplit[i]+'</span><br>';
+                    }
+                    innerDetalle += '</code>';
+//                    console.log(detalle);
+//                    console.log(resultado[0]);
+//                    console.log(resultado[1]);
+//                    console.log(resultado[2]);
+                    $('#resultado').html(innerResult);
+                    $('#detalle .card').html(innerDetalle);
+                    return false;
+                });
+            });
+        </script>
+    </body>
+</html>

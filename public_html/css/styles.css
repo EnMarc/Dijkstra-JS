@@ -1,0 +1,37 @@
+body{
+    margin-top: 50px;
+    background-color: #222;
+}
+h1, h2, h3, h4, h5, p, label{
+    color: #fff;
+}
+.jumbotron{
+    background-color: #303030;
+    text-align: center;
+}
+.card-header {
+    padding: 0.75rem 1.25rem;
+    margin-bottom: 0;
+    background-color: #444;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+}
+.card-dark {
+    position: relative;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -ms-flex-direction: column;
+    flex-direction: column;
+    min-width: 0;
+    word-wrap: break-word;
+    background-color: #303030;
+    background-clip: border-box;
+    border: 1px solid rgba(0, 0, 0, 0.125);
+    border-radius: 0.25rem;
+    margin-bottom: 1rem;
+}
+.table-td-center tr th, .table-td-center tr td{
+    text-align: center;
+}
